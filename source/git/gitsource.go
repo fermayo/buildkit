@@ -310,7 +310,7 @@ func (gs *gitSourceHandler) Snapshot(ctx context.Context) (out cache.ImmutableRe
 		if err != nil {
 			return nil, err
 		}
-		_, err = gitWithinDir(ctx, checkoutDir, checkoutDir, "checkout", "FETCH_HEAD")
+		_, err = gitWithinDir(ctx, checkoutDir, checkoutDir, "checkout", "--force", "FETCH_HEAD")
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to checkout remote %s", gs.src.Remote)
 		}
