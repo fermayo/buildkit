@@ -1,0 +1,11 @@
+FROM golang:1.10-alpine3.7 AS build-buildkit
+RUN apk --no-cache add build-base
+WORKDIR /go/src/github.com/moby/buildkit
+COPY . /go/src/github.com/moby/buildkit
+RUN go install -v ./cmd/buildctl ./cmd/buildkitd
+
+FROM fermayo/containerd:latest-alpine
+RUN apk --no-cache add git
+VOLUME /var/lib
+COPY --from=build-buildkit /go/bin/* /usr/local/bin/
+CMD ["buildctl"]
