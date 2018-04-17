@@ -133,6 +133,7 @@ func (e *execOp) Run(ctx context.Context, inputs []solver.Ref) ([]solver.Ref, er
 		Env:            e.op.Meta.Env,
 		Cwd:            e.op.Meta.Cwd,
 		User:           e.op.Meta.User,
+		Privileged:     e.op.Meta.Privileged,
 		ReadonlyRootFS: readonlyRootFS,
 	}
 

@@ -10,10 +10,11 @@ import (
 )
 
 type Meta struct {
-	Args []string
-	Env  EnvList
-	Cwd  string
-	User string
+	Args       []string
+	Env        EnvList
+	Cwd        string
+	User       string
+	Privileged bool
 }
 
 func NewExecOp(root Output, meta Meta, readOnly bool, md OpMetadata) *ExecOp {
@@ -116,10 +117,11 @@ func (e *ExecOp) Marshal() (digest.Digest, []byte, *OpMetadata, error) {
 
 	peo := &pb.ExecOp{
 		Meta: &pb.Meta{
-			Args: e.meta.Args,
-			Env:  e.meta.Env.ToArray(),
-			Cwd:  e.meta.Cwd,
-			User: e.meta.User,
+			Args:       e.meta.Args,
+			Env:        e.meta.Env.ToArray(),
+			Cwd:        e.meta.Cwd,
+			User:       e.meta.User,
+			Privileged: e.meta.Privileged,
 		},
 	}
 
@@ -300,6 +302,12 @@ func Dirf(str string, v ...interface{}) RunOption {
 func Reset(s State) RunOption {
 	return runOptionFunc(func(ei *ExecInfo) {
 		ei.State = ei.State.Reset(s)
+	})
+}
+
+func Privileged() RunOption {
+	return runOptionFunc(func(ei *ExecInfo) {
+		ei.State = ei.State.Privileged()
 	})
 }
 

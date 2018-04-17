@@ -40,6 +40,7 @@ message Meta {
 	repeated string env = 2;
 	string cwd = 3;
 	string user = 4;
+	bool privileged = 5;
 }
 
 // Mount specifies how to mount an input Op as a filesystem.

@@ -127,6 +127,9 @@ func (w *runcExecutor) Exec(ctx context.Context, meta executor.Meta, root cache.
 	if meta.ReadonlyRootFS {
 		opts = append(opts, containerdoci.WithRootFSReadonly())
 	}
+	if meta.Privileged {
+		opts = append(opts, containerdoci.WithPrivileged)
+	}
 	spec, cleanup, err := oci.GenerateSpec(ctx, meta, mounts, id, resolvConf, hostsFile, opts...)
 	if err != nil {
 		return err

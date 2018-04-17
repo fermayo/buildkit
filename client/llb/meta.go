@@ -9,10 +9,11 @@ import (
 type contextKeyT string
 
 var (
-	keyArgs = contextKeyT("llb.exec.args")
-	keyDir  = contextKeyT("llb.exec.dir")
-	keyEnv  = contextKeyT("llb.exec.env")
-	keyUser = contextKeyT("llb.exec.user")
+	keyArgs       = contextKeyT("llb.exec.args")
+	keyDir        = contextKeyT("llb.exec.dir")
+	keyEnv        = contextKeyT("llb.exec.env")
+	keyUser       = contextKeyT("llb.exec.user")
+	keyPrivileged = contextKeyT("llb.exec.privileged")
 )
 
 func addEnv(key, value string) StateOption {
@@ -49,6 +50,12 @@ func reset(s_ State) StateOption {
 	}
 }
 
+func privileged() StateOption {
+	return func(s State) State {
+		return s.WithValue(keyPrivileged, true)
+	}
+}
+
 func getEnv(s State) EnvList {
 	v := s.Value(keyEnv)
 	if v != nil {
@@ -79,6 +86,14 @@ func getUser(s State) string {
 		return v.(string)
 	}
 	return ""
+}
+
+func getPrivileged(s State) bool {
+	v := s.Value(keyPrivileged)
+	if v != nil {
+		return v.(bool)
+	}
+	return false
 }
 
 func args(args ...string) StateOption {

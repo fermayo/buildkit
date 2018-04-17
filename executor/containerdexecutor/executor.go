@@ -14,6 +14,7 @@ import (
 	"github.com/moby/buildkit/executor/oci"
 	"github.com/moby/buildkit/identity"
 	"github.com/moby/buildkit/snapshot"
+	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/pkg/errors"
 )
 
@@ -66,11 +67,23 @@ func (w containerdExecutor) Exec(ctx context.Context, meta executor.Meta, root c
 	if meta.ReadonlyRootFS {
 		opts = append(opts, containerdoci.WithRootFSReadonly())
 	}
+	if meta.Privileged {
+		opts = append(opts, containerdoci.WithPrivileged)
+	}
 	spec, cleanup, err := oci.GenerateSpec(ctx, meta, mounts, id, resolvConf, hostsFile, opts...)
 	if err != nil {
 		return err
 	}
 	defer cleanup()
+
+	if meta.Privileged {
+		spec.Mounts = append(spec.Mounts, specs.Mount{
+			Destination: "/sys/fs/cgroup",
+			Type:        "cgroup",
+			Source:      "cgroup",
+			Options:     []string{"nosuid", "noexec", "nodev"},
+		})
+	}
 
 	container, err := w.client.NewContainer(ctx, id,
 		containerd.WithSpec(spec),

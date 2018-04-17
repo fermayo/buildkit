@@ -14,6 +14,7 @@ type Meta struct {
 	Cwd            string
 	Tty            bool
 	ReadonlyRootFS bool
+	Privileged     bool
 	// DisableNetworking bool
 }
 
